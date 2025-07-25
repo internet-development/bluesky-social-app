@@ -80,7 +80,11 @@ export function VideoEmbed({
   const contents = (
     <div
       ref={ref}
-      style={{display: 'flex', flex: 1, cursor: 'default'}}
+      style={{
+        display: 'flex',
+        flex: 1,
+        cursor: 'default',
+      }}
       onClick={evt => evt.stopPropagation()}>
       <ErrorBoundary renderError={renderError} key={key}>
         <ViewportObserver

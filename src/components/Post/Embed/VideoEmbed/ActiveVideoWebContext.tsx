@@ -25,12 +25,51 @@ export function Provider({children}: {children: React.ReactNode}) {
   const activeViewLocationRef = useRef(Infinity)
   const {height: windowHeight} = useWindowDimensions()
 
+  const allVideoPositionsRef = useRef<Map<string, number>>(new Map())
+
   // minimising re-renders by using refs
   const manuallySetRef = useRef(false)
   const activeViewIdRef = useRef(activeViewId)
   useEffect(() => {
     activeViewIdRef.current = activeViewId
   }, [activeViewId])
+
+  //APiligrim
+  //Periodic check to ensure the most centered video in safe zone is active
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (manuallySetRef.current) return
+
+      const viewportCenter = windowHeight / 2
+      const safeZoneSize = windowHeight * 0.35
+
+      let bestVideoInSafeZone: string | null = null
+      let bestDistanceInSafeZone = Infinity
+
+      allVideoPositionsRef.current.forEach((position, viewId) => {
+        const distanceFromCenter = Math.abs(position - viewportCenter)
+
+        if (distanceFromCenter < safeZoneSize) {
+          if (distanceFromCenter < bestDistanceInSafeZone) {
+            bestDistanceInSafeZone = distanceFromCenter
+            bestVideoInSafeZone = viewId
+          }
+        }
+      })
+
+      if (
+        bestVideoInSafeZone &&
+        bestVideoInSafeZone !== activeViewIdRef.current
+      ) {
+        setActiveViewId(bestVideoInSafeZone)
+        activeViewLocationRef.current =
+          allVideoPositionsRef.current.get(bestVideoInSafeZone) || Infinity
+        manuallySetRef.current = false
+      }
+    }, 100)
+
+    return () => clearInterval(interval)
+  }, [windowHeight])
 
   const setActiveView = useCallback(
     (viewId: string) => {
@@ -48,12 +87,76 @@ export function Provider({children}: {children: React.ReactNode}) {
     (viewId: string, y: number) => {
       if (isNative) return
 
+      allVideoPositionsRef.current.set(viewId, y)
+
+      const viewportCenter = windowHeight / 2
+      const safeZoneSize = windowHeight * 0.35
+
+      let bestVideoInSafeZone: string | null = null
+      let bestDistanceInSafeZone = Infinity
+
+      allVideoPositionsRef.current.forEach((position, id) => {
+        const distanceFromCenter = Math.abs(position - viewportCenter)
+
+        if (distanceFromCenter < safeZoneSize) {
+          if (distanceFromCenter < bestDistanceInSafeZone) {
+            bestDistanceInSafeZone = distanceFromCenter
+            bestVideoInSafeZone = id
+          }
+        }
+      })
+
+      if (
+        bestVideoInSafeZone &&
+        bestVideoInSafeZone !== activeViewIdRef.current
+      ) {
+        setActiveViewId(bestVideoInSafeZone)
+        activeViewLocationRef.current =
+          allVideoPositionsRef.current.get(bestVideoInSafeZone) || y
+        manuallySetRef.current = false
+        return
+      }
+
       if (viewId === activeViewIdRef.current) {
         activeViewLocationRef.current = y
       } else {
+        // APiligrim
+        // Check if new video is in the safe zone around viewport center
+
+        const viewportCenter = windowHeight / 2
+        const safeZoneSize = windowHeight * 0.35
+
+        const newVideoInSafeZone = Math.abs(y - viewportCenter) < safeZoneSize
+        const currentVideoInSafeZone =
+          Math.abs(activeViewLocationRef.current - viewportCenter) <
+          safeZoneSize
+
+        if (newVideoInSafeZone && !currentVideoInSafeZone) {
+          setActiveViewId(viewId)
+          activeViewLocationRef.current = y
+          manuallySetRef.current = false
+          return
+        }
+
+        //APiligrim
+        // If both videos are in safe zone, always prefer the one closest to center
+        // This ensures the most centered video stays active
+        if (newVideoInSafeZone && currentVideoInSafeZone) {
+          if (
+            distanceToCenter(y) <
+            distanceToCenter(activeViewLocationRef.current)
+          ) {
+            setActiveViewId(viewId)
+            activeViewLocationRef.current = y
+            manuallySetRef.current = false
+          }
+          return
+        }
+
+        // APiligrim
+        // Normal logic for videos outside safe zone
         if (
-          distanceToIdealPosition(y) <
-          distanceToIdealPosition(activeViewLocationRef.current)
+          distanceToCenter(y) < distanceToCenter(activeViewLocationRef.current)
         ) {
           // if the old view was manually set, only usurp if the old view is offscreen
           if (
@@ -69,8 +172,8 @@ export function Provider({children}: {children: React.ReactNode}) {
         }
       }
 
-      function distanceToIdealPosition(yPos: number) {
-        return Math.abs(yPos - windowHeight / 2.5)
+      function distanceToCenter(yPos: number) {
+        return Math.abs(yPos - windowHeight / 2)
       }
 
       function withinViewport(yPos: number) {
