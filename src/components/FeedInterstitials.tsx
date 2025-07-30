@@ -28,6 +28,7 @@ import {
 import {Button, ButtonText} from '#/components/Button'
 import * as FeedCard from '#/components/FeedCard'
 import {ArrowRight_Stroke2_Corner0_Rounded as Arrow} from '#/components/icons/Arrow'
+import {Group3_Stroke2_Corner0_Rounded as Group} from '#/components/icons/Group'
 import {Hashtag_Stroke2_Corner0_Rounded as Hashtag} from '#/components/icons/Hashtag'
 import {InlineLinkText} from '#/components/Link'
 import * as ProfileCard from '#/components/ProfileCard'
@@ -440,6 +441,8 @@ function SeeMoreSuggestedProfilesCard() {
       <CardOuter style={[a.flex_1, t.atoms.shadow_sm]}>
         <View style={[a.flex_1, a.justify_center]}>
           <View style={[a.flex_col, a.align_center, a.gap_md]}>
+            <Group size="xl" />
+
             <Text style={[a.leading_snug, a.text_center]}>
               <Trans>See more accounts you might like</Trans>
             </Text>
