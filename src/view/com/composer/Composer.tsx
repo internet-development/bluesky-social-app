@@ -80,6 +80,7 @@ import {emitPostCreated} from '#/state/events'
 import {type ComposerImage, pasteImage} from '#/state/gallery'
 import {useModalControls} from '#/state/modals'
 import {useRequireAltTextEnabled} from '#/state/preferences'
+import {useAutoLikeOwnPosts} from '#/state/preferences'
 import {
   toPostLanguages,
   useLanguagePrefs,
@@ -174,6 +175,7 @@ export const ComposePost = ({
   const {closeComposer} = useComposerControls()
   const {_} = useLingui()
   const requireAltTextEnabled = useRequireAltTextEnabled()
+  const autoLikeOwnPosts = useAutoLikeOwnPosts()
   const langPrefs = useLanguagePrefs()
   const setLangPrefs = useLanguagePrefsApi()
   const textInput = useRef<TextInputRef>(null)
@@ -494,6 +496,29 @@ export const ComposePost = ({
     if (postUri && !replyTo) {
       emitPostCreated()
     }
+
+    // Auto-like the post if setting is enabled and this is a main post (not a reply)
+    if (autoLikeOwnPosts && postUri && !replyTo) {
+      try {
+        // Extract CID from the post data if available
+        let postCid: string | undefined
+        if (postSuccessData?.posts?.[0]) {
+          const firstPost = postSuccessData.posts[0]
+          if (AppBskyUnspeccedDefs.isThreadItemPost(firstPost.value)) {
+            postCid = firstPost.value.post.cid
+          }
+        }
+
+        if (postCid) {
+          await agent.like(postUri, postCid)
+          logger.info('Auto-liked own post', {postUri})
+        }
+      } catch (error) {
+        // Silently fail - don't interrupt the post success flow
+        logger.warn('Auto-like failed', {error, postUri})
+      }
+    }
+
     setLangPrefs.savePostLanguageToHistory()
     if (initQuote) {
       // We want to wait for the quote count to update before we call `onPost`, which will refetch data
@@ -524,6 +549,7 @@ export const ComposePost = ({
   }, [
     _,
     agent,
+    autoLikeOwnPosts,
     thread,
     canPost,
     isPublishing,
