@@ -1,6 +1,7 @@
-import React from 'react'
+import type React from 'react'
 
 import {Provider as AltTextRequiredProvider} from './alt-text-required'
+import {Provider as AutoLikeOwnPostsProvider} from './auto-like-own-posts'
 import {Provider as AutoplayProvider} from './autoplay'
 import {Provider as DisableHapticsProvider} from './disable-haptics'
 import {Provider as ExternalEmbedsProvider} from './external-embeds-prefs'
@@ -17,6 +18,10 @@ export {
   useRequireAltTextEnabled,
   useSetRequireAltTextEnabled,
 } from './alt-text-required'
+export {
+  useAutoLikeOwnPosts,
+  useSetAutoLikeOwnPosts,
+} from './auto-like-own-posts'
 export {useAutoplayDisabled, useSetAutoplayDisabled} from './autoplay'
 export {useHapticsDisabled, useSetHapticsDisabled} from './disable-haptics'
 export {
@@ -41,7 +46,9 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
                     <UsedStarterPacksProvider>
                       <SubtitlesProvider>
                         <TrendingSettingsProvider>
-                          <KawaiiProvider>{children}</KawaiiProvider>
+                          <AutoLikeOwnPostsProvider>
+                            <KawaiiProvider>{children}</KawaiiProvider>
+                          </AutoLikeOwnPostsProvider>
                         </TrendingSettingsProvider>
                       </SubtitlesProvider>
                     </UsedStarterPacksProvider>

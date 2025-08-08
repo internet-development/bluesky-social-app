@@ -6,6 +6,7 @@ import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {logEvent} from '#/lib/statsig/statsig'
 import {isNative} from '#/platform/detection'
 import {useAutoplayDisabled, useSetAutoplayDisabled} from '#/state/preferences'
+import {useAutoLikeOwnPosts, useSetAutoLikeOwnPosts} from '#/state/preferences'
 import {
   useInAppBrowser,
   useSetInAppBrowser,
@@ -20,6 +21,7 @@ import * as Toggle from '#/components/forms/Toggle'
 import {Bubbles_Stroke2_Corner2_Rounded as BubblesIcon} from '#/components/icons/Bubble'
 import {CircleInfo_Stroke2_Corner0_Rounded as CircleInfo} from '#/components/icons/CircleInfo'
 import {Hashtag_Stroke2_Corner0_Rounded as HashtagIcon} from '#/components/icons/Hashtag'
+import {Heart2_Stroke2_Corner0_Rounded as HeartIcon} from '#/components/icons/Heart2'
 import {Home_Stroke2_Corner2_Rounded as HomeIcon} from '#/components/icons/Home'
 import {Macintosh_Stroke2_Corner2_Rounded as MacintoshIcon} from '#/components/icons/Macintosh'
 import {Play_Stroke2_Corner2_Rounded as PlayIcon} from '#/components/icons/Play'
@@ -35,6 +37,8 @@ export function ContentAndMediaSettingsScreen({}: Props) {
   const {_} = useLingui()
   const autoplayDisabledPref = useAutoplayDisabled()
   const setAutoplayDisabledPref = useSetAutoplayDisabled()
+  const autoLikeOwnPosts = useAutoLikeOwnPosts()
+  const setAutoLikeOwnPosts = useSetAutoLikeOwnPosts()
   const inAppBrowserPref = useInAppBrowser()
   const setUseInAppBrowser = useSetInAppBrowser()
   const {enabled: trendingEnabled} = useTrendingConfig()
@@ -120,6 +124,19 @@ export function ContentAndMediaSettingsScreen({}: Props) {
               <SettingsList.ItemIcon icon={PlayIcon} />
               <SettingsList.ItemText>
                 <Trans>Autoplay videos and GIFs</Trans>
+              </SettingsList.ItemText>
+              <Toggle.Platform />
+            </SettingsList.Item>
+          </Toggle.Item>
+          <Toggle.Item
+            name="auto_like_own_posts"
+            label={_(msg`Auto-like my posts`)}
+            value={autoLikeOwnPosts}
+            onChange={setAutoLikeOwnPosts}>
+            <SettingsList.Item>
+              <SettingsList.ItemIcon icon={HeartIcon} />
+              <SettingsList.ItemText>
+                <Trans>Auto-like my posts</Trans>
               </SettingsList.ItemText>
               <Toggle.Platform />
             </SettingsList.Item>
