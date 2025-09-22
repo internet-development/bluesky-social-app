@@ -9,6 +9,20 @@ export function ProfileHeaderSuggestedFollows({actorDid}: {actorDid: string}) {
     did: actorDid,
   })
 
+  console.log('ProfileHeaderSuggestedFollows data', data)
+
+  // If data is null (e.g., fallback case or no valid suggestions), don't render anything
+  if (data === null) {
+    console.log('ProfileHeaderSuggestedFollows: data is null, returning null')
+    return null
+  }
+
+  // If suggestions array is empty, don't render anything
+  if (!data?.suggestions || data.suggestions.length === 0) {
+    console.log('ProfileHeaderSuggestedFollows: no suggestions, returning null')
+    return null
+  }
+
   return (
     <ProfileGrid
       isSuggestionsLoading={isLoading}

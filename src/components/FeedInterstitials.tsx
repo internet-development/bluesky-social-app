@@ -7,7 +7,7 @@ import {useNavigation} from '@react-navigation/native'
 
 import {type NavigationProp} from '#/lib/routes/types'
 import {logEvent} from '#/lib/statsig/statsig'
-import {logger} from '#/logger'
+import {logger as _logger} from '#/logger'
 import {isIOS} from '#/platform/detection'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useGetPopularFeedsQuery} from '#/state/queries/feed'
@@ -185,14 +185,14 @@ function useExperimentalSuggestedUsersQuery() {
 }
 
 export function SuggestedFollows({feed}: {feed: FeedDescriptor}) {
-  const {currentAccount} = useSession()
-  const [feedType, feedUriOrDid] = feed.split('|')
+  const {currentAccount: _currentAccount} = useSession()
+  const [feedType, _feedUriOrDid] = feed.split('|')
   if (feedType === 'author') {
-    if (currentAccount?.did === feedUriOrDid) {
-      return null
-    } else {
-      return <SuggestedFollowsProfile did={feedUriOrDid} />
-    }
+    // if (currentAccount?.did === feedUriOrDid) {
+    //   return null
+    // } else {
+    //   return <SuggestedFollowsProfile did={feedUriOrDid} />
+    // }
   } else {
     return <SuggestedFollowsHome />
   }
@@ -206,6 +206,21 @@ export function SuggestedFollowsProfile({did}: {did: string}) {
   } = useSuggestedFollowsByActorQuery({
     did,
   })
+
+  console.log('SuggestedFollowsProfile data', data)
+
+  // If data is null (e.g., fallback case or no valid suggestions), don't render anything
+  if (data === null) {
+    console.log('SuggestedFollowsProfile: data is null, returning null')
+    return null
+  }
+
+  // If suggestions array is empty, don't render anything
+  if (!data?.suggestions || data.suggestions.length === 0) {
+    console.log('SuggestedFollowsProfile: no suggestions, returning null')
+    return null
+  }
+
   return (
     <ProfileGrid
       isSuggestionsLoading={isSuggestionsLoading}
@@ -258,10 +273,34 @@ export function ProfileGrid({
   const maxLength = gtMobile ? 3 : isProfileHeaderContext ? 12 : 6
   const minLength = gtMobile ? 3 : 4
 
+  // Debug logging to track what's happening
+  console.log('ProfileGrid render:', {
+    viewContext,
+    isLoading,
+    profilesLength: profiles.length,
+    error: error?.message,
+    minLength,
+    maxLength,
+    isSuggestionsLoading,
+    moderationOpts: !!moderationOpts,
+  })
+
+  // Early return if there's an error or not enough profiles and we're not loading
+  if (error || (!isLoading && profiles.length < minLength)) {
+    console.log('ProfileGrid early return: not enough profiles or error', {
+      hasError: !!error,
+      isLoading,
+      profilesLength: profiles.length,
+      minLength,
+      errorMessage: error?.message,
+    })
+    return null
+  }
+
   const content = isLoading
     ? Array(maxLength)
         .fill(0)
-        .map((_, i) => (
+        .map((_item, i) => (
           <View
             key={i}
             style={[
@@ -358,8 +397,22 @@ export function ProfileGrid({
           </ProfileCard.Link>
         ))
 
-  if (error || (!isLoading && profiles.length < minLength)) {
-    logger.debug(`Not enough profiles to show suggested follows`)
+  console.log('ProfileGrid content generation:', {
+    isLoading,
+    hasError: !!error,
+    profilesLength: profiles.length,
+    contentType: isLoading
+      ? 'loading placeholders'
+      : error || !profiles.length
+        ? 'null'
+        : 'actual profiles',
+    contentIsArray: Array.isArray(content),
+    contentLength: Array.isArray(content) ? content.length : 'not array',
+  })
+
+  // Don't render anything if content is null (no profiles to show)
+  if (!content) {
+    console.log('ProfileGrid: no content to render - returning null')
     return null
   }
 
@@ -397,12 +450,14 @@ export function ProfileGrid({
       </View>
 
       {gtMobile ? (
-        <View style={[a.p_lg, a.pt_md]}>
-          <View style={[a.flex_1, a.flex_row, a.flex_wrap, a.gap_md]}>
-            {content}
+        content && (
+          <View style={[a.p_lg, a.pt_md]}>
+            <View style={[a.flex_1, a.flex_row, a.flex_wrap, a.gap_md]}>
+              {content}
+            </View>
           </View>
-        </View>
-      ) : (
+        )
+      ) : content ? (
         <BlockDrawerGesture>
           <ScrollView
             horizontal
@@ -415,7 +470,7 @@ export function ProfileGrid({
             {!isProfileHeaderContext && <SeeMoreSuggestedProfilesCard />}
           </ScrollView>
         </BlockDrawerGesture>
-      )}
+      ) : null}
     </View>
   )
 }
@@ -475,7 +530,7 @@ export function SuggestedFeeds() {
   const content = isLoading ? (
     Array(numFeedsToDisplay)
       .fill(0)
-      .map((_, i) => <SuggestedFeedsCardPlaceholder key={i} />)
+      .map((_item, i) => <SuggestedFeedsCardPlaceholder key={i} />)
   ) : error || !feeds ? null : (
     <>
       {feeds.slice(0, numFeedsToDisplay).map(feed => (
