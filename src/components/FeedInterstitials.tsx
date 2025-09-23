@@ -206,6 +206,19 @@ export function SuggestedFollowsProfile({did}: {did: string}) {
   } = useSuggestedFollowsByActorQuery({
     did,
   })
+
+  console.log('SuggestedFollowsProfile data', data)
+
+  if (data === null) {
+    console.log('SuggestedFollowsProfile: data is null, returning null')
+    return null
+  }
+
+  if (!data?.suggestions || data.suggestions.length === 0) {
+    console.log('SuggestedFollowsProfile: no suggestions, returning null')
+    return null
+  }
+
   return (
     <ProfileGrid
       isSuggestionsLoading={isSuggestionsLoading}
@@ -257,6 +270,28 @@ export function ProfileGrid({
 
   const maxLength = gtMobile ? 3 : isProfileHeaderContext ? 12 : 6
   const minLength = gtMobile ? 3 : 4
+
+  console.log('ProfileGrid render:', {
+    viewContext,
+    isLoading,
+    profilesLength: profiles.length,
+    error: error?.message,
+    minLength,
+    maxLength,
+    isSuggestionsLoading,
+    moderationOpts: !!moderationOpts,
+  })
+
+  if (error || (!isLoading && profiles.length < minLength)) {
+    console.log('ProfileGrid early return: not enough profiles or error', {
+      hasError: !!error,
+      isLoading,
+      profilesLength: profiles.length,
+      minLength,
+      errorMessage: error?.message,
+    })
+    return null
+  }
 
   const content = isLoading
     ? Array(maxLength)
