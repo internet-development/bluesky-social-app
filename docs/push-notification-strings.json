@@ -1,0 +1,245 @@
+{
+  "_meta": {
+    "version": 1,
+    "purpose": "Draft catalog of push notification strings for server-side localization (or client-side if adopted). Keys map to NotificationReason variants with placeholders.",
+    "notes": [
+      "Templates use ICU-style placeholders in {braces}.",
+      "Server should choose the correct variant (single vs multi) and supply required placeholders.",
+      "If a placeholder is unavailable, omit related fragment or choose a simpler variant.",
+      "Title may be omitted by platforms that only show body; provide both where supported.",
+      "These are English source strings for translation; product copy may adjust."
+    ]
+  },
+  "keys": {
+    "push.like.single": {
+      "description": "One actor liked recipient's post",
+      "placeholders": [
+        {"name": "actor", "description": "Display name or handle of the user"},
+        {"name": "postAuthor", "description": "Owner of the post; usually 'you'"},
+        {"name": "postSnippet", "description": "Short text from the post (optional)"}
+      ],
+      "title": "New like",
+      "body": "{actor} liked {postAuthor}\u2019s post: {postSnippet}"
+    },
+    "push.like.multi": {
+      "description": "Multiple actors liked recipient's post",
+      "placeholders": [
+        {"name": "actor", "description": "Leading actor name for readability"},
+        {"name": "count", "description": "Number of additional actors"},
+        {"name": "postAuthor", "description": "Owner of the post; usually 'your'"}
+      ],
+      "title": "New likes",
+      "body": "{actor} and {count} others liked {postAuthor}\u2019s post"
+    },
+
+    "push.repost.single": {
+      "description": "One actor reposted recipient's post",
+      "placeholders": [
+        {"name": "actor", "description": "User who reposted"},
+        {"name": "postAuthor", "description": "Owner of the post; usually 'you'"}
+      ],
+      "title": "Repost",
+      "body": "{actor} reposted {postAuthor}\u2019s post"
+    },
+    "push.repost.multi": {
+      "description": "Multiple actors reposted recipient's post",
+      "placeholders": [
+        {"name": "actor", "description": "Leading actor"},
+        {"name": "count", "description": "Additional actors count"},
+        {"name": "postAuthor", "description": "Owner of the post; usually 'your'"}
+      ],
+      "title": "Reposts",
+      "body": "{actor} and {count} others reposted {postAuthor}\u2019s post"
+    },
+
+    "push.follow.single": {
+      "description": "One actor followed the recipient",
+      "placeholders": [
+        {"name": "actor", "description": "Follower name"}
+      ],
+      "title": "New follower",
+      "body": "{actor} started following you"
+    },
+    "push.follow.multi": {
+      "description": "Multiple actors followed the recipient",
+      "placeholders": [
+        {"name": "actor", "description": "Leading follower"},
+        {"name": "count", "description": "Additional followers count"}
+      ],
+      "title": "New followers",
+      "body": "{actor} and {count} others started following you"
+    },
+
+    "push.mention.single": {
+      "description": "One actor mentioned the recipient",
+      "placeholders": [
+        {"name": "actor", "description": "User who mentioned"},
+        {"name": "postSnippet", "description": "Short text from the mentioning post (optional)"}
+      ],
+      "title": "Mention",
+      "body": "{actor} mentioned you: {postSnippet}"
+    },
+    "push.mention.multi": {
+      "description": "Multiple actors mentioned the recipient (aggregated)",
+      "placeholders": [
+        {"name": "actor", "description": "Leading actor"},
+        {"name": "count", "description": "Additional actors count"}
+      ],
+      "title": "Mentions",
+      "body": "{actor} and {count} others mentioned you"
+    },
+
+    "push.reply.single": {
+      "description": "One actor replied to recipient",
+      "placeholders": [
+        {"name": "actor", "description": "Replier"},
+        {"name": "postSnippet", "description": "Short text from the reply (optional)"}
+      ],
+      "title": "Reply",
+      "body": "{actor} replied to you: {postSnippet}"
+    },
+    "push.reply.multi": {
+      "description": "Multiple actors replied (aggregated)",
+      "placeholders": [
+        {"name": "actor", "description": "Leading replier"},
+        {"name": "count", "description": "Additional repliers count"}
+      ],
+      "title": "Replies",
+      "body": "{actor} and {count} others replied to you"
+    },
+
+    "push.quote.single": {
+      "description": "One actor quoted recipient's post",
+      "placeholders": [
+        {"name": "actor", "description": "Quoter"},
+        {"name": "postSnippet", "description": "Short text from the quote (optional)"}
+      ],
+      "title": "Quote",
+      "body": "{actor} quoted your post: {postSnippet}"
+    },
+    "push.quote.multi": {
+      "description": "Multiple actors quoted (aggregated)",
+      "placeholders": [
+        {"name": "actor", "description": "Leading quoter"},
+        {"name": "count", "description": "Additional quoters count"}
+      ],
+      "title": "Quotes",
+      "body": "{actor} and {count} others quoted your post"
+    },
+
+    "push.chat_message.single": {
+      "description": "One actor sent a chat message",
+      "placeholders": [
+        {"name": "actor", "description": "Sender"},
+        {"name": "messageSnippet", "description": "Short preview of the message (optional)"}
+      ],
+      "title": "New message",
+      "body": "{actor} sent you a message: {messageSnippet}"
+    },
+    "push.chat_message.multi": {
+      "description": "Multiple actors sent chat messages",
+      "placeholders": [
+        {"name": "actor", "description": "Leading sender"},
+        {"name": "count", "description": "Additional senders count"}
+      ],
+      "title": "New messages",
+      "body": "{actor} and {count} others sent you messages"
+    },
+
+    "push.starterpack_joined.single": {
+      "description": "One actor joined your starter pack",
+      "placeholders": [
+        {"name": "actor", "description": "User who joined"},
+        {"name": "packName", "description": "Starter pack name (optional)"}
+      ],
+      "title": "Starter pack",
+      "body": "{actor} joined your starter pack{packName}"
+    },
+    "push.starterpack_joined.multi": {
+      "description": "Multiple actors joined your starter pack",
+      "placeholders": [
+        {"name": "actor", "description": "Leading user"},
+        {"name": "count", "description": "Additional users count"},
+        {"name": "packName", "description": "Starter pack name (optional)"}
+      ],
+      "title": "Starter pack",
+      "body": "{actor} and {count} others joined your starter pack{packName}"
+    },
+
+    "push.like_via_repost.single": {
+      "description": "One actor liked the recipient's repost",
+      "placeholders": [
+        {"name": "actor", "description": "User who liked"},
+        {"name": "postAuthor", "description": "Original post author (optional)"}
+      ],
+      "title": "Like",
+      "body": "{actor} liked your repost{postAuthor}"
+    },
+    "push.like_via_repost.multi": {
+      "description": "Multiple actors liked the recipient's repost",
+      "placeholders": [
+        {"name": "actor", "description": "Leading liker"},
+        {"name": "count", "description": "Additional likers count"},
+        {"name": "postAuthor", "description": "Original post author (optional)"}
+      ],
+      "title": "Likes",
+      "body": "{actor} and {count} others liked your repost{postAuthor}"
+    },
+
+    "push.repost_via_repost.single": {
+      "description": "One actor reposted the recipient's repost",
+      "placeholders": [
+        {"name": "actor", "description": "User who reposted"},
+        {"name": "postAuthor", "description": "Original post author (optional)"}
+      ],
+      "title": "Repost",
+      "body": "{actor} reposted your repost{postAuthor}"
+    },
+    "push.repost_via_repost.multi": {
+      "description": "Multiple actors reposted the recipient's repost",
+      "placeholders": [
+        {"name": "actor", "description": "Leading reposter"},
+        {"name": "count", "description": "Additional reposters count"},
+        {"name": "postAuthor", "description": "Original post author (optional)"}
+      ],
+      "title": "Reposts",
+      "body": "{actor} and {count} others reposted your repost{postAuthor}"
+    },
+
+    "push.verified": {
+      "description": "Recipient gained verification",
+      "placeholders": [
+        {"name": "method", "description": "Verification method description (optional)"}
+      ],
+      "title": "Verified",
+      "body": "Your account is now verified{method}"
+    },
+    "push.unverified": {
+      "description": "Recipient lost verification or it expired",
+      "placeholders": [
+        {"name": "reason", "description": "Short reason (optional)"}
+      ],
+      "title": "Verification update",
+      "body": "Your verification status changed{reason}"
+    },
+
+    "push.subscribed_post.single": {
+      "description": "New post from an author the user subscribed to",
+      "placeholders": [
+        {"name": "author", "description": "Post author"},
+        {"name": "postSnippet", "description": "Short text from the post (optional)"}
+      ],
+      "title": "New post",
+      "body": "{author} posted: {postSnippet}"
+    },
+    "push.subscribed_post.multi": {
+      "description": "Multiple new posts from subscribed authors",
+      "placeholders": [
+        {"name": "author", "description": "Leading author"},
+        {"name": "count", "description": "Additional authors/posts count"}
+      ],
+      "title": "New posts",
+      "body": "{author} and {count} others posted updates"
+    }
+  }
+}
